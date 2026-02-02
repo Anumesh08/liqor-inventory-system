@@ -57,7 +57,6 @@ export default function LoginPage() {
           console.error("Token decode error:", decodeError);
         }
 
-        // ✅ REDIRECT TO DASHBOARD - YEH MISSING THA!
         console.log("Login successful, redirecting to dashboard...");
         router.push("/dashboard");
       } else {
