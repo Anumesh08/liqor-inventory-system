@@ -21,7 +21,6 @@ export default function LoginPage() {
 
       // Convert login_pin to number
       const pinNumber = parseInt(login_pin);
-
       // API expects mobile_no and login_pin (as number)
       const response = await axios.post(`${API_BASE_URL}/User/login`, {
         mobile_no: mobile_no,
