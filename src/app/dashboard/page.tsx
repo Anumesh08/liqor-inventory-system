@@ -139,10 +139,10 @@ export default function DashboardPage() {
     const selectedShopName =
       selectedShop === "6"
         ? "ALL SHOPS"
-        : shops.find((s) => s.id.toString() === selectedShop)?.name || "";
+        : shops.find((s: any) => s.id.toString() === selectedShop)?.name || "";
 
     const selectedCategoryName =
-      categories.find((c) => c.id === selectedCategory)?.name ||
+      categories.find((c: any) => c.id === selectedCategory)?.name ||
       "All Categories";
 
     return {
