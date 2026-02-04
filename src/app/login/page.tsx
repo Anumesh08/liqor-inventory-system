@@ -82,45 +82,61 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-gray-100">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          {/* Logo/Header */}
-          <div className="text-center mb-8">
-            <div className="mx-auto w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-4">
-              <span className="text-2xl text-white font-bold">LI</span>
+    <>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-3">
+        {/* Left side - Login Form */}
+        <div className="w-full md:w-1/2 flex justify-center px-4 md:px-8">
+          <div className="w-full max-w-md">
+            <div className="rounded-2xl p-8">
+              {/* Logo/Header */}
+              <div className="text-center mb-8">
+                <div className="mx-auto w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-4">
+                  <span className="text-2xl text-white font-bold">LI</span>
+                </div>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  Liquor Inventory
+                </h1>
+                <p className="text-gray-600 mt-2">Sign in with Mobile & PIN</p>
+              </div>
+
+              {/* Login Form */}
+              <LoginForm
+                onSubmit={handleLogin}
+                loading={loading}
+                error={error}
+              />
+
+              {/* Demo Info */}
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-800 text-center">
+                  <strong>Demo Credentials:</strong>
+                  <br />
+                  Mobile: 8010901680
+                  <br />
+                  PIN: 123456
+                </p>
+              </div>
+
+              {/* Footer */}
+              <div className="mt-8 text-center">
+                <p className="text-sm text-gray-500">
+                  © 2026 Liquor Inventory System
+                </p>
+              </div>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Liquor Inventory
-            </h1>
-            <p className="text-gray-600 mt-2">Sign in with Mobile & PIN</p>
-            <p className="text-xs text-gray-500 mt-1">
-              API: {API_BASE_URL}/User/login
-            </p>
-          </div>
-
-          {/* Login Form */}
-          <LoginForm onSubmit={handleLogin} loading={loading} error={error} />
-
-          {/* Demo Info - PIN update karein */}
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-            <p className="text-sm text-blue-800 text-center">
-              <strong>Demo Credentials:</strong>
-              <br />
-              Mobile: 8010901680
-              <br />
-              PIN: 123456 {/* 6-digit PIN */}
-            </p>
-          </div>
-
-          {/* Footer */}
-          <div className="mt-8 text-center">
-            <p className="text-sm text-gray-500">
-              © 2024 Liquor Inventory System
-            </p>
           </div>
         </div>
+        {/* Right side - Image */}
+        <div
+          className="hidden md:block md:w-2/2 h-screen rounded-xl"
+          style={{
+            backgroundImage: `url('/images/drink.jpg')`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        ></div>
       </div>
-    </div>
+    </>
   );
 }

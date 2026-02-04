@@ -22,6 +22,18 @@ export interface Shop {
   isActive: boolean;
 }
 
+export interface Category {
+  id: string | number;
+  name: string;
+  packaging_size?: PackagingSize[]; // Add packaging_size property
+}
+
+export interface PackagingSize {
+  psid: number;
+  size: string;
+  size_title: string;
+  category_id: number;
+}
 export interface Product {
   stock_id: number;
   product_id: number;

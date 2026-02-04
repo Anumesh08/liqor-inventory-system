@@ -22,7 +22,7 @@ export default function LoginForm({
   };
 
   const fillDemoData = () => {
-    setMobileNo("8010901680");
+    setMobileNo("8888098647");
     setLoginPin("123456");
   };
 
@@ -62,13 +62,14 @@ export default function LoginForm({
           onChange={(e) =>
             setMobileNo(e.target.value.replace(/\D/g, "").slice(0, 10))
           }
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+          className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
           placeholder="Enter 10-digit mobile number"
           pattern="[0-9]{10}"
           maxLength={10}
           required
           disabled={loading}
         />
+
         <p className="text-xs text-gray-500 mt-1">10 digits only</p>
       </div>
 
@@ -86,7 +87,7 @@ export default function LoginForm({
           onChange={(e) =>
             setLoginPin(e.target.value.replace(/\D/g, "").slice(0, 6))
           }
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+          className="w-full px-4 py-3 border text-black border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
           placeholder="Enter 6-digit PIN"
           pattern="[0-9]{6}"
           maxLength={6}
@@ -136,11 +137,6 @@ export default function LoginForm({
           "Sign In"
         )}
       </button>
-
-      {/* Demo Info */}
-      <div className="text-center text-xs text-gray-500">
-        <p>Demo: Mobile: 8888098647 | PIN: 123456</p>
-      </div>
     </form>
   );
 }

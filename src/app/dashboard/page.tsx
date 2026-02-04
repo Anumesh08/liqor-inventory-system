@@ -1,232 +1,108 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import axios from "axios";
-import { Product, Shop, User } from "@/types";
+import { useMemo, useState } from "react";
+import { useShops } from "@/app/hooks/useShop";
+import { useCategories } from "@/app/hooks/useCategory";
+import { useClosingStock } from "@/app/hooks/useStock";
+import { useAuth } from "@/app/hooks/useAuth";
 import SummaryCard from "@/components/dashboard/SummaryCard";
 import ShopFilter from "@/components/dashboard/ShopFilter";
 import InventoryTable from "@/components/dashboard/InventoryTable";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+import { getTodayDate } from "@/services/app";
+import CategoryFilter from "./CategoryFilter";
+import DateFilter from "./DateFilter";
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const [selectedShop, setSelectedShop] = useState<string>("");
-  const [products, setProducts] = useState<Product[]>([]);
-  const [shops, setShops] = useState<Shop[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [apiError, setApiError] = useState("");
-  const [user, setUser] = useState<User | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(50);
-  const [totalProducts, setTotalProducts] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
+  const { user, logout } = useAuth();
+  const [selectedShop, setSelectedShop] = useState<string>("6");
+  const [selectedCategory, setSelectedCategory] = useState<string>("1");
+  const [selectedDate, setSelectedDate] = useState<string>(getTodayDate());
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(25);
 
-  useEffect(() => {
-    // Check authentication
-    const token = localStorage.getItem("token");
-    const userStr = localStorage.getItem("user");
+  // Fetch shops using React Query
+  const {
+    data: shops = [],
+    isLoading: shopsLoading,
+    isError: shopsError,
+  } = useShops();
 
-    if (!token) {
-      router.push("/login");
-      return;
-    }
+  // Fetch categories using React Query
+  const {
+    data: categories = [],
+    isLoading: categoriesLoading,
+    isError: categoriesError,
+  } = useCategories();
 
-    if (userStr) {
-      try {
-        const userData = JSON.parse(userStr);
-        setUser(userData);
-      } catch (error) {
-        console.error("Error parsing user data:", error);
+  // Fetch stock data using React Query - pass categories
+  const {
+    data: stockData,
+    isLoading: stockLoading,
+    isError: stockError,
+  } = useClosingStock(selectedShop, selectedCategory, selectedDate, categories);
+
+  // Filter products based on search query
+  const filteredProducts = useMemo(() => {
+    if (!stockData?.products) return [];
+
+    if (!searchQuery.trim()) return stockData.products;
+
+    const query = searchQuery.toLowerCase().trim();
+
+    return stockData.products.filter((product: any) => {
+      // Search in product_name
+      if (product.product_name?.toLowerCase().includes(query)) {
+        return true;
       }
-    }
 
-    fetchShops();
-  }, [router]);
-
-  useEffect(() => {
-    // Fetch stock data when shop, page, or items per page changes
-    if (selectedShop && shops.length > 0) {
-      fetchStockData();
-    }
-  }, [selectedShop, currentPage, itemsPerPage]);
-
-  // Fetch shops from API
-  const fetchShops = async () => {
-    try {
-      const token = localStorage.getItem("token");
-
-      const shopsResponse = await axios.get(`${API_BASE_URL}/Shop/all_shops`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = shopsResponse.data;
-      console.log("Shops API Response:", data);
-
-      if (data.status && data.shops) {
-        const transformedShops = data.shops.map((shop: any) => ({
-          id: shop.shop_id,
-          name: shop.shop_name,
-          code: shop.license_no,
-          address: shop.address,
-          contact_no: shop.contact_no,
-          isActive: true,
-        }));
-
-        setShops(transformedShops);
-
-        // Set default to "ALL SHOPS" (shop_id=6)
-        setSelectedShop("6");
-        setLoading(false);
-      } else {
-        throw new Error("Failed to fetch shops");
+      // Search in alias1, alias2, alias3
+      if (product.alias1?.toLowerCase().includes(query)) {
+        return true;
       }
-    } catch (error: any) {
-      console.error("Shops API Error:", error);
-      setApiError("Could not connect to shops API. Showing demo data.");
 
-      // Fallback to mock shops
-      const mockShops = [
-        {
-          id: 6,
-          name: "ALL SHOPS",
-          code: "LICNO87686",
-          address: "Datta Mandir, Nashik - 422001",
-          contact_no: "88888777799",
-          isActive: true,
-        },
-        {
-          id: 5,
-          name: "Govinda Wines",
-          code: "LIC898097",
-          address: "Old Agra Rd, Mumbai Naka, Renuka Nagar, Nashik",
-          contact_no: "7897890077",
-          isActive: true,
-        },
-        {
-          id: 4,
-          name: "Kitkat Wine Shop",
-          address:
-            "Trambakeshwar Rd, Opp. Zilla Parishad, Trimbak Naka, Shalimar, Nashik, Maharashtra 422001",
-          contact_no: "8748745522",
-          code: "LICuew98re",
-          isActive: true,
-        },
-        {
-          id: 1,
-          name: "Patel Wines",
-          code: "IL324jsdkfj",
-          address: "Datta Mandir Signal, Nashik Road, Nashik - 422101",
-          contact_no: "9090898977",
-          isActive: true,
-        },
-        {
-          id: 3,
-          name: "Rakesh Wines",
-          code: "IL32oireuore",
-          address:
-            "1, Wadala Naka, Mayur Complex, Renuka Nagar, Nashik, Maharashtra 422001",
-          contact_no: "7889966321",
-          isActive: true,
-        },
-        {
-          id: 2,
-          name: "YO-YO Wines",
-          code: "LICNOFL8979",
-          address: "Ashok Stambh, Nashik - 422001",
-          contact_no: "7878969645",
-          isActive: true,
-        },
-      ];
-
-      setShops(mockShops);
-      setSelectedShop("6");
-      setLoading(false);
-    }
-  };
-
-  // Fetch stock data
-  const fetchStockData = async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem("token");
-
-      const response = await axios.get(`${API_BASE_URL}/Stock/closing_stock`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: {
-          shop_id: selectedShop,
-          page_no: currentPage,
-          limit: itemsPerPage,
-        },
-      });
-
-      const data = response.data;
-      console.log("Stock API Response:", data);
-
-      if (data.status && data.data?.closing_stocks) {
-        const transformedProducts = data.data.closing_stocks.map(
-          (stock: any) => ({
-            stock_id: stock.stock_id,
-            product_id: stock.product_id,
-            product_name: stock.product_name,
-            psid: stock.psid,
-            size: stock.size,
-            size_title: stock.size_title,
-            stock_qty: stock.stock_qty,
-          }),
-        );
-
-        setProducts(transformedProducts);
-        setTotalProducts(data.pagination.total);
-        setTotalPages(data.pagination.totalPages);
-        setLoading(false);
-        setApiError("");
+      if (product.alias2?.toLowerCase().includes(query)) {
+        return true;
       }
-    } catch (error: any) {
-      console.error("Stock API Error:", error);
-      setApiError("Could not fetch stock data. Please try again.");
-      setLoading(false);
-    }
-  };
+
+      if (product.alias3?.toLowerCase().includes(query)) {
+        return true;
+      }
+
+      return false;
+    });
+  }, [stockData?.products, searchQuery]);
+
+  // Calculate paginated products
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredProducts.slice(startIndex, endIndex);
+  }, [filteredProducts, currentPage, itemsPerPage]);
+
+  // Calculate total pages
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredProducts.length / itemsPerPage);
+  }, [filteredProducts.length, itemsPerPage]);
 
   const handleShopChange = (shopId: string) => {
     setSelectedShop(shopId);
-    setCurrentPage(1); // Reset to page 1 when shop changes
+    setCurrentPage(1);
   };
 
-  const calculateSummary = () => {
-    const totalStock = products.reduce(
-      (sum, p) => sum + (parseInt(p.stock_qty) || 0),
-      0,
-    );
-    const lowStockItems = products.filter(
-      (p) => (parseInt(p.stock_qty) || 0) < 10,
-    ).length;
-
-    const selectedShopName =
-      selectedShop === "6"
-        ? "ALL SHOPS"
-        : shops.find((s) => s.id.toString() === selectedShop)?.name || "";
-
-    return {
-      totalProducts: totalProducts,
-      totalStock,
-      lowStockItems,
-      selectedShopName,
-    };
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    setCurrentPage(1);
   };
 
-  const summary = calculateSummary();
+  const handleDateChange = (date: string) => {
+    setSelectedDate(date);
+    setCurrentPage(1);
+  };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    router.push("/login");
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
   };
 
   const handlePageChange = (page: number) => {
@@ -238,17 +114,73 @@ export default function DashboardPage() {
     setCurrentPage(1); // Reset to page 1 when items per page changes
   };
 
-  if (loading && products.length === 0) {
+  const calculateSummary = () => {
+    const products = filteredProducts;
+    const totalProducts = products.length;
+
+    // Calculate total stock from all size columns
+    let totalStock = 0;
+    products.forEach((product: any) => {
+      stockData?.packagingSizes?.forEach((size: any) => {
+        totalStock += product[size.psid] || 0;
+      });
+    });
+
+    const lowStockItems = products.filter((product: any) => {
+      let isLowStock = false;
+      stockData?.packagingSizes?.forEach((size: any) => {
+        if ((product[size.psid] || 0) < 10) {
+          isLowStock = true;
+        }
+      });
+      return isLowStock;
+    }).length;
+
+    const selectedShopName =
+      selectedShop === "6"
+        ? "ALL SHOPS"
+        : shops.find((s) => s.id.toString() === selectedShop)?.name || "";
+
+    const selectedCategoryName =
+      categories.find((c) => c.id === selectedCategory)?.name ||
+      "All Categories";
+
+    return {
+      totalProducts,
+      totalStock,
+      lowStockItems,
+      selectedShopName,
+      selectedCategoryName,
+    };
+  };
+
+  const calculateFilteredTotals = () => {
+    const filteredTotals: Record<string, number> = {};
+
+    filteredProducts.forEach((product: any) => {
+      stockData?.packagingSizes?.forEach((size: any) => {
+        if (!filteredTotals[size.psid]) {
+          filteredTotals[size.psid] = 0;
+        }
+        filteredTotals[size.psid] += product[size.psid] || 0;
+      });
+    });
+
+    return filteredTotals;
+  };
+
+  const filteredTotals = calculateFilteredTotals();
+
+  const summary = calculateSummary();
+  const isLoading = shopsLoading || categoriesLoading || stockLoading;
+  const hasError = shopsError || categoriesError || stockError;
+
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-lg text-gray-600">Loading dashboard...</p>
-          {user && (
-            <p className="text-sm text-gray-500 mt-1">
-              Welcome, {user.employee_name} - {user.shop?.shop_name}
-            </p>
-          )}
         </div>
       </div>
     );
@@ -268,22 +200,20 @@ export default function DashboardPage() {
                 <h1 className="text-xl font-bold text-gray-900">
                   Liquor Inventory System
                 </h1>
-                {user && (
-                  <p className="text-sm text-gray-600">
-                    Welcome,{" "}
-                    <span className="font-semibold">{user.employee_name}</span>{" "}
-                    • Shop:{" "}
-                    <span className="font-semibold">
-                      {user.shop?.shop_name}
-                    </span>
-                  </p>
-                )}
               </div>
             </div>
 
             <div className="flex items-center space-x-4">
+              {user && (
+                <p className="text-sm text-gray-600">
+                  Welcome,{" "}
+                  <span className="text-base font-semibold">
+                    {user.employee_name}
+                  </span>
+                </p>
+              )}
               <button
-                onClick={handleLogout}
+                onClick={logout}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition"
               >
                 Logout
@@ -295,15 +225,16 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <main className="p-6">
-        {/* API Error Warning */}
-        {apiError && (
+        {hasError && (
           <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
             <div className="flex items-center">
               <span className="text-yellow-600 mr-3">⚠️</span>
               <div>
-                <p className="font-medium text-yellow-800">{apiError}</p>
+                <p className="font-medium text-yellow-800">
+                  Could not connect to API. Please check your connection.
+                </p>
                 <p className="text-sm text-yellow-600 mt-1">
-                  Backend API: {API_BASE_URL}
+                  Backend API: {process.env.NEXT_PUBLIC_API_URL}
                 </p>
               </div>
             </div>
@@ -319,9 +250,9 @@ export default function DashboardPage() {
             color="blue"
           />
           <SummaryCard
-            title="Total Products"
-            value={summary.totalProducts.toLocaleString()}
-            icon="📦"
+            title="Category"
+            value={summary.selectedCategoryName}
+            icon="🏷️"
             color="green"
           />
           <SummaryCard
@@ -338,35 +269,60 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* Shop Filter */}
-        <div className="mb-6">
+        {/* Filters */}
+        <div className="flex gap-4 mb-6">
           <ShopFilter
             shops={shops}
             selectedShop={selectedShop}
             onShopChange={handleShopChange}
           />
+
+          <CategoryFilter
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onCategoryChange={handleCategoryChange}
+          />
+
+          <DateFilter
+            selectedDate={selectedDate}
+            onDateChange={handleDateChange}
+          />
         </div>
 
         {/* Inventory Table */}
         <InventoryTable
-          products={products}
+          products={paginatedProducts}
+          packagingSizes={stockData?.packagingSizes || []}
+          totals={filteredTotals}
           currentPage={currentPage}
           totalPages={totalPages}
-          totalProducts={totalProducts}
+          totalProducts={filteredProducts.length}
           onPageChange={handlePageChange}
           onItemsPerPageChange={handleItemsPerPageChange}
           itemsPerPage={itemsPerPage}
+          searchQuery={searchQuery}
+          onSearchChange={handleSearchChange}
         />
 
         {/* Footer */}
         <div className="mt-8 text-center text-sm text-gray-500">
-          <p>
-            © 2024 Liquor Inventory System. Data updated on{" "}
-            {new Date().toLocaleDateString()}
+          <p>© 2024 Liquor Inventory System. All rights reserved.</p>
+          <p className="mt-1">
+            Showing data for {summary.selectedShopName} •{" "}
+            {summary.selectedCategoryName} • Date: {selectedDate}
           </p>
           <p className="mt-1">
-            Showing data for {summary.selectedShopName} • Page {currentPage} of{" "}
-            {totalPages} • {products.length} products on this page
+            Showing {paginatedProducts.length} of {filteredProducts.length}{" "}
+            products
+            {searchQuery && (
+              <span className="text-blue-600">
+                {" "}
+                • Searching for: "{searchQuery}"
+              </span>
+            )}
+          </p>
+          <p className="mt-1 text-xs">
+            Page {currentPage} of {totalPages} • {itemsPerPage} items per page
           </p>
           {user && (
             <p className="mt-1 text-xs">
