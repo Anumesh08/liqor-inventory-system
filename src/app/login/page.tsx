@@ -21,7 +21,6 @@ export default function LoginPage() {
 
       // Convert login_pin to number
       const pinNumber = parseInt(login_pin);
-      // API expects mobile_no and login_pin (as number)
       const response = await axios.post(`${API_BASE_URL}/User/login`, {
         mobile_no: mobile_no,
         login_pin: pinNumber,
@@ -30,18 +29,17 @@ export default function LoginPage() {
       const data = response.data;
       console.log("API Response:", data);
 
-      // ✅ FIX: Check if login successful
       if (data.status && data.token) {
-        // ✅ Save token to localStorage
+        // Save token to localStorage
         localStorage.setItem("token", data.token);
 
-        // ✅ Decode token to get user info
+        // Decode token to get user info
         try {
           const tokenParts = data.token.split(".");
           const payload = JSON.parse(atob(tokenParts[1]));
           console.log("Decoded Token Payload:", payload);
 
-          // ✅ Save user info
+          // Save user info
           localStorage.setItem(
             "user",
             JSON.stringify({
@@ -85,6 +83,17 @@ export default function LoginPage() {
     <>
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-3">
         {/* Left side - Login Form */}
+
+        <div
+          className="hidden md:block md:w-2/2 h-screen rounded-xl"
+          style={{
+            backgroundImage: `url('/images/drink.jpg')`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        ></div>
+        {/* Right side - Image */}
         <div className="w-full md:w-1/2 flex justify-center px-4 md:px-8">
           <div className="w-full max-w-md">
             <div className="rounded-2xl p-8">
@@ -126,16 +135,6 @@ export default function LoginPage() {
             </div>
           </div>
         </div>
-        {/* Right side - Image */}
-        <div
-          className="hidden md:block md:w-2/2 h-screen rounded-xl"
-          style={{
-            backgroundImage: `url('/images/drink.jpg')`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        ></div>
       </div>
     </>
   );

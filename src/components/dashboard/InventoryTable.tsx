@@ -65,7 +65,14 @@ export default function InventoryTable({
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden">
       {/* Table Header */}
-      <div className="px-6 py-4 border-b border-gray-200">
+      <div
+        className="px-6 py-4 border-b border-gray-200 bg-white"
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
+        }}
+      >
         <div className="flex items-center justify-between">
           <div className="relative w-full max-w-md">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -119,9 +126,23 @@ export default function InventoryTable({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
+      <Box
+        sx={{
+          maxHeight: "65vh",
+          overflowY: "auto",
+          overflowX: "auto",
+        }}
+        className="overflow-x-auto"
+      >
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead
+            className="bg-gray-50"
+            style={{
+              position: "sticky",
+              top: 0,
+              zIndex: 10,
+            }}
+          >
             <tr>
               <th className="px-6 py-3 text-left text-md font-medium text-gray-500 uppercase tracking-wider">
                 Product Name
@@ -207,7 +228,7 @@ export default function InventoryTable({
             )}
           </tbody>
         </table>
-      </div>
+      </Box>
 
       {/* Pagination */}
       {totalPages > 1 && (

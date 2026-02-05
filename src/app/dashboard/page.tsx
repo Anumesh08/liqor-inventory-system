@@ -11,6 +11,9 @@ import InventoryTable from "@/components/dashboard/InventoryTable";
 import { getTodayDate } from "@/services/app";
 import CategoryFilter from "./CategoryFilter";
 import DateFilter from "./DateFilter";
+import { Box, Button } from "@mui/material";
+import { Download } from "@mui/icons-material";
+import { exportToExcel } from "../utils/exportToExcel";
 
 export default function DashboardPage() {
   const { user, logout } = useAuth();
@@ -20,6 +23,7 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(25);
+  const [isExporting, setIsExporting] = useState<boolean>(false);
 
   // Fetch shops using React Query
   const {
@@ -169,6 +173,47 @@ export default function DashboardPage() {
     return filteredTotals;
   };
 
+  const handleExportToExcel = () => {
+    if (!filteredProducts.length || !stockData?.packagingSizes) {
+      alert("No data to export!");
+      return;
+    }
+
+    setIsExporting(true);
+
+    try {
+      const selectedShopName =
+        selectedShop === "6"
+          ? "ALL SHOPS"
+          : shops.find((s: any) => s.id.toString() === selectedShop)?.name ||
+            "Unknown Shop";
+
+      const selectedCategoryName =
+        categories.find((c: any) => c.id === selectedCategory)?.name ||
+        "All Categories";
+
+      const success = exportToExcel({
+        products: filteredProducts,
+        packagingSizes: stockData.packagingSizes,
+        shopName: selectedShopName,
+        categoryName: selectedCategoryName,
+        date: selectedDate,
+        totals: filteredTotals,
+      });
+
+      if (success) {
+        console.log("Export successful!");
+      } else {
+        alert("Failed to export data. Please try again.");
+      }
+    } catch (error) {
+      console.error("Export error:", error);
+      alert("Error exporting data. Please try again.");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const filteredTotals = calculateFilteredTotals();
 
   const summary = calculateSummary();
@@ -270,24 +315,68 @@ export default function DashboardPage() {
         </div>
 
         {/* Filters */}
-        <div className="flex gap-4 mb-6">
-          <ShopFilter
-            shops={shops}
-            selectedShop={selectedShop}
-            onShopChange={handleShopChange}
-          />
+        <Box
+          sx={{
+            position: "sticky",
+            top: 0,
+            zIndex: 1200,
+            backgroundColor: "#f9fafb",
+            py: 2,
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", md: "row" },
+              alignItems: { xs: "flex-start", md: "center" },
+              justifyContent: "space-between",
+              gap: 2,
+            }}
+          >
+            <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+              <ShopFilter
+                shops={shops}
+                selectedShop={selectedShop}
+                onShopChange={handleShopChange}
+              />
 
-          <CategoryFilter
-            categories={categories}
-            selectedCategory={selectedCategory}
-            onCategoryChange={handleCategoryChange}
-          />
+              <CategoryFilter
+                categories={categories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={handleCategoryChange}
+              />
 
-          <DateFilter
-            selectedDate={selectedDate}
-            onDateChange={handleDateChange}
-          />
-        </div>
+              <DateFilter
+                selectedDate={selectedDate}
+                onDateChange={handleDateChange}
+              />
+            </Box>
+
+            {/* Export Button */}
+            <Box>
+              <Button
+                variant="contained"
+                color="success"
+                startIcon={<Download />}
+                onClick={handleExportToExcel}
+                disabled={isExporting || filteredProducts.length === 0}
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 600,
+                  py: 1.5,
+                  px: 3,
+                  borderRadius: 2,
+                  boxShadow: 2,
+                  "&:hover": {
+                    boxShadow: 4,
+                  },
+                }}
+              >
+                {isExporting ? "Exporting..." : "Export to Excel"}
+              </Button>
+            </Box>
+          </Box>
+        </Box>
 
         {/* Inventory Table */}
         <InventoryTable
