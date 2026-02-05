@@ -23,6 +23,11 @@ export const exportToExcel = ({
 
     // Prepare data for main sheet
     const mainData = [
+      ["Shop:", shopName],
+      ["Category:", categoryName],
+      ["Date:", date],
+      [""],
+
       // Header row
       ["Product Name", ...packagingSizes.map((size) => size.size)],
       // Data rows
@@ -30,6 +35,7 @@ export const exportToExcel = ({
         product.product_name,
         ...packagingSizes.map((size) => product[size.psid] || 0),
       ]),
+
       // Totals row
       ["TOTAL", ...packagingSizes.map((size) => totals[size.psid] || 0)],
     ];
@@ -39,7 +45,7 @@ export const exportToExcel = ({
 
     // Set column widths
     const colWidths = [
-      { wch: 40 }, // Product Name column width
+      { wch: 45 }, // Product Name column width
       ...packagingSizes.map(() => ({ wch: 15 })), // Size columns width
     ];
     ws["!cols"] = colWidths;

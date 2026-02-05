@@ -41,7 +41,7 @@ export default function ShopFilter({
             value={selectedShop}
             onChange={(e) => onShopChange(e.target.value)}
             variant="outlined"
-            size="medium"
+            size="small"
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: 1,

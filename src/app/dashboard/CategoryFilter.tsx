@@ -39,7 +39,7 @@ export default function CategoryFilter({
           value={selectedCategory}
           onChange={(e) => onCategoryChange(e.target.value)}
           variant="outlined"
-          size="medium"
+          size="small"
           sx={{
             "& .MuiOutlinedInput-root": {
               borderRadius: 1,

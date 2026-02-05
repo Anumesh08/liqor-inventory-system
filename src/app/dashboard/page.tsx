@@ -5,7 +5,6 @@ import { useShops } from "@/app/hooks/useShop";
 import { useCategories } from "@/app/hooks/useCategory";
 import { useClosingStock } from "@/app/hooks/useStock";
 import { useAuth } from "@/app/hooks/useAuth";
-import SummaryCard from "@/components/dashboard/SummaryCard";
 import ShopFilter from "@/components/dashboard/ShopFilter";
 import InventoryTable from "@/components/dashboard/InventoryTable";
 import { getTodayDate } from "@/services/app";
@@ -285,34 +284,6 @@ export default function DashboardPage() {
             </div>
           </div>
         )}
-
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          <SummaryCard
-            title="Current Shop"
-            value={summary.selectedShopName}
-            icon="🏪"
-            color="blue"
-          />
-          <SummaryCard
-            title="Category"
-            value={summary.selectedCategoryName}
-            icon="🏷️"
-            color="green"
-          />
-          <SummaryCard
-            title="Total Stock"
-            value={summary.totalStock.toLocaleString()}
-            icon="📊"
-            color="purple"
-          />
-          <SummaryCard
-            title="Low Stock Items"
-            value={summary.lowStockItems}
-            icon="⚠️"
-            color="orange"
-          />
-        </div>
 
         {/* Filters */}
         <Box

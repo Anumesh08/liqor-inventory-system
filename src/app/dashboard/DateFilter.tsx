@@ -46,7 +46,7 @@ export default function DateFilter({
               textField: {
                 fullWidth: true,
                 variant: "outlined",
-                size: "medium",
+                size: "small",
                 sx: {
                   "& .MuiOutlinedInput-root": {
                     borderRadius: 2,
