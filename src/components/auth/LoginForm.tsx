@@ -14,7 +14,7 @@ export default function LoginForm({
   error,
 }: LoginFormProps) {
   const [mobile_no, setMobileNo] = useState("8888098647");
-  const [login_pin, setLoginPin] = useState("123456");
+  const [login_pin, setLoginPin] = useState("1234");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +23,7 @@ export default function LoginForm({
 
   const fillDemoData = () => {
     setMobileNo("8888098647");
-    setLoginPin("123456");
+    setLoginPin("1234");
   };
 
   const clearForm = () => {
@@ -73,36 +73,35 @@ export default function LoginForm({
         <p className="text-xs text-gray-500 mt-1">10 digits only</p>
       </div>
 
-      {/* PIN - Updated for 6 digits */}
+      {/* PIN - Updated for 4 digits */}
       <div>
         <div className="flex justify-between items-center mb-2">
           <label className="block text-sm font-medium text-gray-700">
             Login PIN
           </label>
-          <span className="text-xs text-gray-500">6-digit PIN</span>
         </div>
         <input
           type="password"
           value={login_pin}
           onChange={(e) =>
-            setLoginPin(e.target.value.replace(/\D/g, "").slice(0, 6))
+            setLoginPin(e.target.value.replace(/\D/g, "").slice(0, 4))
           }
           className="w-full px-4 py-3 border text-black border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-          placeholder="Enter 6-digit PIN"
-          pattern="[0-9]{6}"
-          maxLength={6}
+          placeholder="Enter 4-digit PIN"
+          pattern="[0-9]{4}"
+          maxLength={4}
           required
           disabled={loading}
         />
         <div className="flex justify-between mt-1">
-          <p className="text-xs text-gray-500">6 digits only</p>
-          <p className="text-xs text-gray-500">Length: {login_pin.length}/6</p>
+          <p className="text-xs text-gray-500">4 digits only</p>
+          <p className="text-xs text-gray-500">Length: {login_pin.length}/4</p>
         </div>
       </div>
 
       {/* PIN Visual Indicator (Optional) */}
       <div className="flex justify-center space-x-1">
-        {Array.from({ length: 6 }).map((_, index) => (
+        {Array.from({ length: 4 }).map((_, index) => (
           <div
             key={index}
             className={`w-3 h-3 rounded-full ${

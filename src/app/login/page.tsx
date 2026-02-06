@@ -122,7 +122,7 @@ export default function LoginPage() {
                   <br />
                   Mobile: 8010901680
                   <br />
-                  PIN: 123456
+                  PIN: 1234
                 </p>
               </div>
 
