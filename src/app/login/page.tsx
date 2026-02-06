@@ -116,7 +116,7 @@ export default function LoginPage() {
               />
 
               {/* Demo Info */}
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              {/* <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                 <p className="text-sm text-blue-800 text-center">
                   <strong>Demo Credentials:</strong>
                   <br />
@@ -124,7 +124,7 @@ export default function LoginPage() {
                   <br />
                   PIN: 1234
                 </p>
-              </div>
+              </div> */}
 
               {/* Footer */}
               <div className="mt-8 text-center">

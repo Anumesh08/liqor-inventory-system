@@ -13,8 +13,8 @@ export default function LoginForm({
   loading,
   error,
 }: LoginFormProps) {
-  const [mobile_no, setMobileNo] = useState("8888098647");
-  const [login_pin, setLoginPin] = useState("1234");
+  const [mobile_no, setMobileNo] = useState("");
+  const [login_pin, setLoginPin] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,13 +40,13 @@ export default function LoginForm({
             Mobile Number
           </label>
           <div className="space-x-2">
-            <button
+            {/* <button
               type="button"
               onClick={fillDemoData}
               className="text-xs text-blue-600 hover:text-blue-800"
             >
               Fill Demo
-            </button>
+            </button> */}
             <button
               type="button"
               onClick={clearForm}
@@ -59,6 +59,7 @@ export default function LoginForm({
         <input
           type="tel"
           value={mobile_no}
+          autoComplete="off"
           onChange={(e) =>
             setMobileNo(e.target.value.replace(/\D/g, "").slice(0, 10))
           }
@@ -82,6 +83,7 @@ export default function LoginForm({
         </div>
         <input
           type="password"
+          autoComplete="off"
           value={login_pin}
           onChange={(e) =>
             setLoginPin(e.target.value.replace(/\D/g, "").slice(0, 4))
