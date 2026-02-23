@@ -10,9 +10,10 @@ import InventoryTable from "@/components/dashboard/InventoryTable";
 import { getTodayDate } from "@/services/app";
 import CategoryFilter from "./CategoryFilter";
 import DateFilter from "./DateFilter";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Skeleton } from "@mui/material";
 import { Download } from "@mui/icons-material";
 import { exportToExcel } from "../utils/exportToExcel";
+import FiltersSkeleton from "@/components/skeleton/FiltersSkeleton";
 
 export default function DashboardPage() {
   const { user, logout } = useAuth();
@@ -43,6 +44,7 @@ export default function DashboardPage() {
     data: stockData,
     isLoading: stockLoading,
     isError: stockError,
+    refetch,
   } = useClosingStock(selectedShop, selectedCategory, selectedDate, categories);
 
   // Filter products based on search query
@@ -91,16 +93,19 @@ export default function DashboardPage() {
   const handleShopChange = (shopId: string) => {
     setSelectedShop(shopId);
     setCurrentPage(1);
+    refetch();
   };
 
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId);
     setCurrentPage(1);
+    refetch();
   };
 
   const handleDateChange = (date: string) => {
     setSelectedDate(date);
     setCurrentPage(1);
+    refetch();
   };
 
   const handleSearchChange = (query: string) => {
@@ -219,17 +224,6 @@ export default function DashboardPage() {
   const isLoading = shopsLoading || categoriesLoading || stockLoading;
   const hasError = shopsError || categoriesError || stockError;
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Navigation */}
@@ -286,68 +280,72 @@ export default function DashboardPage() {
         )}
 
         {/* Filters */}
-        <Box
-          sx={{
-            position: "sticky",
-            top: 0,
-            zIndex: 1200,
-            backgroundColor: "#f9fafb",
-            py: 2,
-          }}
-        >
+        {isLoading ? (
+          <FiltersSkeleton />
+        ) : (
           <Box
             sx={{
-              display: "flex",
-              flexDirection: { xs: "column", md: "row" },
-              alignItems: { xs: "flex-start", md: "center" },
-              justifyContent: "space-between",
-              gap: 2,
+              position: "sticky",
+              top: 0,
+              zIndex: 1200,
+              backgroundColor: "#f9fafb",
+              py: 2,
             }}
           >
-            <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-              <ShopFilter
-                shops={shops}
-                selectedShop={selectedShop}
-                onShopChange={handleShopChange}
-              />
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", md: "row" },
+                alignItems: { xs: "flex-start", md: "center" },
+                justifyContent: "space-between",
+                gap: 2,
+              }}
+            >
+              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                <ShopFilter
+                  shops={shops}
+                  selectedShop={selectedShop}
+                  onShopChange={handleShopChange}
+                />
 
-              <CategoryFilter
-                categories={categories}
-                selectedCategory={selectedCategory}
-                onCategoryChange={handleCategoryChange}
-              />
+                <CategoryFilter
+                  categories={categories}
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={handleCategoryChange}
+                />
 
-              <DateFilter
-                selectedDate={selectedDate}
-                onDateChange={handleDateChange}
-              />
-            </Box>
+                <DateFilter
+                  selectedDate={selectedDate}
+                  onDateChange={handleDateChange}
+                />
+              </Box>
 
-            {/* Export Button */}
-            <Box>
-              <Button
-                variant="contained"
-                color="success"
-                startIcon={<Download />}
-                onClick={handleExportToExcel}
-                disabled={isExporting || filteredProducts.length === 0}
-                sx={{
-                  textTransform: "none",
-                  fontWeight: 600,
-                  py: 1.5,
-                  px: 3,
-                  borderRadius: 2,
-                  boxShadow: 2,
-                  "&:hover": {
-                    boxShadow: 4,
-                  },
-                }}
-              >
-                {isExporting ? "Exporting..." : "Export to Excel"}
-              </Button>
+              {/* Export Button */}
+              <Box>
+                <Button
+                  variant="contained"
+                  color="success"
+                  startIcon={<Download />}
+                  onClick={handleExportToExcel}
+                  disabled={isExporting || filteredProducts.length === 0}
+                  sx={{
+                    textTransform: "none",
+                    fontWeight: 600,
+                    py: 1.5,
+                    px: 3,
+                    borderRadius: 2,
+                    boxShadow: 2,
+                    "&:hover": {
+                      boxShadow: 4,
+                    },
+                  }}
+                >
+                  {isExporting ? "Exporting..." : "Export to Excel"}
+                </Button>
+              </Box>
             </Box>
           </Box>
-        </Box>
+        )}
 
         {/* Inventory Table */}
         <InventoryTable
@@ -362,6 +360,7 @@ export default function DashboardPage() {
           itemsPerPage={itemsPerPage}
           searchQuery={searchQuery}
           onSearchChange={handleSearchChange}
+          isLoading={isLoading}
         />
 
         {/* Footer */}

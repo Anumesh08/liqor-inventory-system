@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Box, CircularProgress } from "@mui/material";
 
 export default function HomePage() {
   const router = useRouter();
@@ -16,8 +17,16 @@ export default function HomePage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-gray-100">
-      <div className="text-xl">Loading...</div>
-    </div>
+    <Box
+      className="min-h-screen"
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(to bottom right, #eff6ff, #f3f4f6)",
+      }}
+    >
+      <CircularProgress size={50} thickness={4} />
+    </Box>
   );
 }

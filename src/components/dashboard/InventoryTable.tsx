@@ -1,7 +1,15 @@
 "use client";
 
 import { Search } from "@mui/icons-material";
-import { Box, FormControl, MenuItem, Select, Typography } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  MenuItem,
+  Select,
+  Skeleton,
+  Typography,
+} from "@mui/material";
+import InventoryTableSkeleton from "../skeleton/InventoryTableSkeleton";
 
 interface PackagingSize {
   psid: number;
@@ -22,6 +30,7 @@ interface InventoryTableProps {
   itemsPerPage: number;
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
+  isLoading?: boolean;
 }
 
 export default function InventoryTable({
@@ -36,6 +45,7 @@ export default function InventoryTable({
   itemsPerPage,
   searchQuery = "",
   onSearchChange = () => {},
+  isLoading = false,
 }: InventoryTableProps) {
   const handlePrevious = () => {
     if (currentPage > 1) {
@@ -134,100 +144,104 @@ export default function InventoryTable({
         }}
         className="overflow-x-auto"
       >
-        <table className="w-full">
-          <thead
-            className="bg-gray-50"
-            style={{
-              position: "sticky",
-              top: 0,
-              zIndex: 10,
-            }}
-          >
-            <tr>
-              <th className="px-6 py-3 text-left text-md font-medium text-gray-500 uppercase tracking-wider">
-                Product Name
-              </th>
-              {packagingSizes.map((size) => (
-                <th
-                  key={size.psid}
-                  className="px-6 py-3 text-left text-md font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  {size.size}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {products.length === 0 ? (
+        {isLoading ? (
+          <InventoryTableSkeleton />
+        ) : (
+          <table className="w-full">
+            <thead
+              className="bg-gray-50"
+              style={{
+                position: "sticky",
+                top: 0,
+                zIndex: 10,
+              }}
+            >
               <tr>
-                <td
-                  colSpan={packagingSizes.length + 1}
-                  className="px-6 py-12 text-center"
-                >
-                  <div className="text-gray-500">
-                    <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                      <span className="text-2xl">📦</span>
-                    </div>
-                    <p className="text-lg font-medium">No products found</p>
-                    <p className="text-sm mt-1">
-                      {currentPage > 1
-                        ? "No more products on this page"
-                        : "Try selecting a different shop or category or date."}
-                    </p>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              <>
-                {products.map((product) => (
-                  <tr
-                    key={`${product.stock_id}-${product.product_id}`}
-                    className="hover:bg-gray-50 transition-colors"
+                <th className="px-6 py-3 text-left text-md font-medium text-gray-500 uppercase tracking-wider">
+                  Product Name
+                </th>
+                {packagingSizes.map((size) => (
+                  <th
+                    key={size.psid}
+                    className="px-6 py-3 text-left text-md font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    {/* Product Name Column */}
-                    <td className="px-6 py-4">
-                      <div className="font-medium text-gray-900">
-                        {product.product_name}
-                      </div>
-                      {product.alias1 && (
-                        <div className="text-sm text-gray-500">
-                          {product.alias1}
-                        </div>
-                      )}
-                    </td>
-
-                    {/* Size Columns */}
-                    {packagingSizes.map((size) => (
-                      <td key={size.psid} className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStockStatusColor(
-                            product[size.psid] || 0,
-                          )}`}
-                        >
-                          {(product[size.psid] || 0).toLocaleString()} units
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
+                    {size.size}
+                  </th>
                 ))}
-                {/* Totals Row */}
-                {packagingSizes.length > 0 && (
-                  <tr className="bg-blue-50 font-semibold">
-                    <td className="text-md px-6 py-4 text-blue-900">TOTAL</td>
-                    {packagingSizes.map((size) => (
-                      <td
-                        key={size.psid}
-                        className="px-6 py-4 text-md text-blue-900"
-                      >
-                        {(totals[size.psid] || 0).toLocaleString()} units
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {products.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={packagingSizes.length + 1}
+                    className="px-6 py-12 text-center"
+                  >
+                    <div className="text-gray-500">
+                      <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                        <span className="text-2xl">📦</span>
+                      </div>
+                      <p className="text-lg font-medium">No products found</p>
+                      <p className="text-sm mt-1">
+                        {currentPage > 1
+                          ? "No more products on this page"
+                          : "Try selecting a different shop or category or date."}
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                <>
+                  {products.map((product) => (
+                    <tr
+                      key={`${product.stock_id}-${product.product_id}`}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      {/* Product Name Column */}
+                      <td className="px-6 py-4">
+                        <div className="font-medium text-gray-900">
+                          {product.product_name}
+                        </div>
+                        {product.alias1 && (
+                          <div className="text-sm text-gray-500">
+                            {product.alias1}
+                          </div>
+                        )}
                       </td>
-                    ))}
-                  </tr>
-                )}
-              </>
-            )}
-          </tbody>
-        </table>
+
+                      {/* Size Columns */}
+                      {packagingSizes.map((size) => (
+                        <td key={size.psid} className="px-6 py-4">
+                          <span
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStockStatusColor(
+                              product[size.psid] || 0,
+                            )}`}
+                          >
+                            {(product[size.psid] || 0).toLocaleString()} units
+                          </span>
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                  {/* Totals Row */}
+                  {packagingSizes.length > 0 && (
+                    <tr className="bg-blue-50 font-semibold">
+                      <td className="text-md px-6 py-4 text-blue-900">TOTAL</td>
+                      {packagingSizes.map((size) => (
+                        <td
+                          key={size.psid}
+                          className="px-6 py-4 text-md text-blue-900"
+                        >
+                          {(totals[size.psid] || 0).toLocaleString()} units
+                        </td>
+                      ))}
+                    </tr>
+                  )}
+                </>
+              )}
+            </tbody>
+          </table>
+        )}
       </Box>
 
       {/* Pagination */}
