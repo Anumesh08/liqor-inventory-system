@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Albert_Sans } from "next/font/google";
 import "./globals.css";
 import ThemeProvider from "./providers/ThemeProvider";
 import QueryProvider from "./providers/QueryProvider";
 
-const inter = Inter({ subsets: ["latin"] });
+const albertSans = Albert_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-albert",
+});
 
 export const metadata: Metadata = {
   title: "Liquor Inventory System",
@@ -18,7 +22,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-gray-50`}>
+      <head>
+        <link
+          href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css"
+          rel="stylesheet"
+        />
+      </head>
+      <body className={`${albertSans.className} bg-gray-50`}>
         <QueryProvider>
           <ThemeProvider>{children}</ThemeProvider>
         </QueryProvider>

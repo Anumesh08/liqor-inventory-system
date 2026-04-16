@@ -1,14 +1,7 @@
 "use client";
 
 import { Search } from "@mui/icons-material";
-import {
-  Box,
-  FormControl,
-  MenuItem,
-  Select,
-  Skeleton,
-  Typography,
-} from "@mui/material";
+import { Box, FormControl, MenuItem, Select, Typography } from "@mui/material";
 import InventoryTableSkeleton from "../skeleton/InventoryTableSkeleton";
 
 interface PackagingSize {

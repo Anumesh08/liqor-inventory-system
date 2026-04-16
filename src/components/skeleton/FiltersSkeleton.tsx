@@ -9,7 +9,6 @@ export default function FiltersSkeleton() {
         position: "sticky",
         top: 0,
         zIndex: 1200,
-        backgroundColor: "#f9fafb",
         py: 2,
       }}
     >

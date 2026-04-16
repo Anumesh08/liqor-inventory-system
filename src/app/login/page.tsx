@@ -115,17 +115,6 @@ export default function LoginPage() {
                 error={error}
               />
 
-              {/* Demo Info */}
-              {/* <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                <p className="text-sm text-blue-800 text-center">
-                  <strong>Demo Credentials:</strong>
-                  <br />
-                  Mobile: 8010901680
-                  <br />
-                  PIN: 1234
-                </p>
-              </div> */}
-
               {/* Footer */}
               <div className="mt-8 text-center">
                 <p className="text-sm text-gray-500">
@@ -139,3 +128,94 @@ export default function LoginPage() {
     </>
   );
 }
+
+// "use client";
+
+// import { useState } from "react";
+// import { useRouter } from "next/navigation";
+// import LoginForm from "@/components/auth/LoginForm";
+
+// export default function LoginPage() {
+//   const router = useRouter();
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState("");
+
+//   const handleLogin = async (mobile_no: string, login_pin: string) => {
+//     setLoading(true);
+//     setError("");
+
+//     // ✅ Static Credentials
+//     const STATIC_MOBILE = "9999999999";
+//     const STATIC_PIN = "1234";
+
+//     setTimeout(() => {
+//       if (mobile_no === STATIC_MOBILE && login_pin === STATIC_PIN) {
+//         // Fake token
+//         const fakeToken = "dev-static-token";
+
+//         localStorage.setItem("token", fakeToken);
+
+//         // Fake user data
+//         localStorage.setItem(
+//           "user",
+//           JSON.stringify({
+//             employee_id: 1,
+//             employee_name: "Admin User",
+//             mobile_no: STATIC_MOBILE,
+//             shop_id: 1,
+//             employee_type: "admin",
+//             shop: "Main Shop",
+//           }),
+//         );
+
+//         router.push("/dashboard");
+//       } else {
+//         setError("Invalid mobile number or PIN");
+//       }
+
+//       setLoading(false);
+//     }, 800); // small delay for realistic feel
+//   };
+
+//   return (
+//     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-3">
+//       {/* Left side Image */}
+//       <div
+//         className="hidden md:block md:w-1/2 h-screen rounded-xl"
+//         style={{
+//           backgroundImage: `url('/images/drink.jpg')`,
+//           backgroundSize: "cover",
+//           backgroundPosition: "center",
+//           backgroundRepeat: "no-repeat",
+//         }}
+//       ></div>
+
+//       {/* Right side - Login */}
+//       <div className="w-full md:w-1/2 flex justify-center px-4 md:px-8">
+//         <div className="w-full max-w-md">
+//           <div className="rounded-2xl p-8">
+//             {/* Header */}
+//             <div className="text-center mb-8">
+//               <div className="mx-auto w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-4">
+//                 <span className="text-2xl text-white font-bold">LI</span>
+//               </div>
+//               <h1 className="text-3xl font-bold text-gray-900">
+//                 Liquor Inventory
+//               </h1>
+//               <p className="text-gray-600 mt-2">Sign in with Mobile & PIN</p>
+//             </div>
+
+//             <LoginForm onSubmit={handleLogin} loading={loading} error={error} />
+
+//             {/* Footer */}
+//             <div className="mt-8 text-center">
+//               <p className="text-sm text-gray-500">
+//                 © 2026 Liquor Inventory System
+//               </p>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }

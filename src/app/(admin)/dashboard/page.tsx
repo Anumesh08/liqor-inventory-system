@@ -12,7 +12,7 @@ import CategoryFilter from "./CategoryFilter";
 import DateFilter from "./DateFilter";
 import { Box, Button, Skeleton } from "@mui/material";
 import { Download } from "@mui/icons-material";
-import { exportToExcel } from "../utils/exportToExcel";
+import { exportToExcel } from "../../utils/exportToExcel";
 import FiltersSkeleton from "@/components/skeleton/FiltersSkeleton";
 
 export default function DashboardPage() {
@@ -225,9 +225,9 @@ export default function DashboardPage() {
   const hasError = shopsError || categoriesError || stockError;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen w-full">
       {/* Top Navigation */}
-      <header className="bg-white shadow">
+      {/* <header className="bg-white shadow">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -259,10 +259,11 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
-      </header>
+      </header> */}
 
       {/* Main Content */}
-      <main className="p-6">
+      <main className="w-full">
+        {" "}
         {hasError && (
           <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
             <div className="flex items-center">
@@ -278,7 +279,6 @@ export default function DashboardPage() {
             </div>
           </div>
         )}
-
         {/* Filters */}
         {isLoading ? (
           <FiltersSkeleton />
@@ -288,7 +288,6 @@ export default function DashboardPage() {
               position: "sticky",
               top: 0,
               zIndex: 1200,
-              backgroundColor: "#f9fafb",
               py: 2,
             }}
           >
@@ -346,7 +345,6 @@ export default function DashboardPage() {
             </Box>
           </Box>
         )}
-
         {/* Inventory Table */}
         <InventoryTable
           products={paginatedProducts}
@@ -362,7 +360,6 @@ export default function DashboardPage() {
           onSearchChange={handleSearchChange}
           isLoading={isLoading}
         />
-
         {/* Footer */}
         <div className="mt-8 text-center text-sm text-gray-500">
           <p>© 2024 Liquor Inventory System. All rights reserved.</p>
